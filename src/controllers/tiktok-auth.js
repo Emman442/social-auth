@@ -20,7 +20,7 @@ const axios = require("axios");
 const tiktokAuthUrl = "https://open-api.tiktok.com/platform/oauth/connect/";
 const clientId = process.env.TIKTOK_CLIENT_KEY;
 const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
-const redirectUri = "https://www.creedlance.net";
+const redirectUri = "https://social-auth-fb9r.onrender.com/auth/tiktok/callback";
 
 
 
