@@ -32,8 +32,8 @@ router.get("/", (req, res) => {
   const csrfState = Math.random().toString(36).substring(2);
   res.cookie("csrfState", csrfState, { maxAge: 60000 });
 
-  // let url = "https://www.tiktok.com/v2/auth/authorize/";
-  let url = "https://open-api.tiktok.com/platform/oauth/connect/";
+  let url = "https://www.tiktok.com/v2/auth/authorize/";
+  // let url = "https://open-api.tiktok.com/platform/oauth/connect/";
 
   // the following params need to be in `application/x-www-form-urlencoded` format.
   url += `?client_key=${clientId}`;
