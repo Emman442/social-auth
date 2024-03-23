@@ -13,7 +13,7 @@ passport.use(
     {
       clientID: process.env.APP_ID,
       clientSecret: process.env.APP_SECRET,
-      callbackURL: "https://social-auth-fb9r.onrender.com",
+      callbackURL: "https://social-auth-fb9r.onrender.com/auth/facebook/callback",
     },
     async function (accessToken, refreshToken, profile, cb) {
       console.log(profile);
