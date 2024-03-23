@@ -100,9 +100,10 @@ passport.use(
       clientID: "7336702696353515525",
       clientSecret: "rWVCeJYhukATmMEbMVwaw6kZREYzJQL0",
       scope: ["user.info.basic"],
-      callbackURL: "https://social-auth-fb9r.onrender.com/callback",
+      callbackURL: "https://social-auth-fb9r.onrender.com/auth/tiktok/callback",
     },
     function (accessToken, refreshToken, profile, done) {
+      console.log(profile)
       User.findOrCreate({ tiktokId: profile.id }, function (err, user) {
         return done(err, user);
       });
@@ -114,7 +115,7 @@ router.get("/", passport.authenticate("tiktok"));
 
 router.get(
   "/callback",
-  passport.authenticate("tiktok", { failureRedirect: "/login" }),
+  passport.authenticate("tiktok", { failureRedirect: "/" }),
   function (req, res) {
     // Successful authentication, redirect home.
     res.redirect("/");
