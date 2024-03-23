@@ -1,4 +1,8 @@
 const router = require("express").Router()
+const passport = require('passport');
+
+const express = require('express');
+const User = require('../dal/models/user.model');
 
 // router.get("/oauth", (req, res) => {
 //   const csrfState = Math.random().toString(36).substring(2);
@@ -15,73 +19,106 @@ const router = require("express").Router()
 
 //   res.redirect(url);
 //});
-const axios = require("axios");
+// const axios = require("axios");
 
-const tiktokAuthUrl = "https://open-api.tiktok.com/platform/oauth/connect/";
-const clientId = process.env.TIKTOK_CLIENT_KEY;
-const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
-const redirectUri = "https://social-auth-fb9r.onrender.com/auth/tiktok/callback";
-
-
-
-
-// Redirect users to TikTok authorization URL
-router.get("/", (req, res) => {
-  // const authUrl = `${tiktokAuthUrl}?client_key=${clientId}&redirect_uri=${redirectUri}&scope=user.info.basic+user.info.avatar&response_type=code`;
-
-  const csrfState = Math.random().toString(36).substring(2);
-  res.cookie("csrfState", csrfState, { maxAge: 60000 });
-
-  let url = "https://www.tiktok.com/v2/auth/authorize/";
-  // let url = "https://open-api.tiktok.com/platform/oauth/connect/";
-
-  // the following params need to be in `application/x-www-form-urlencoded` format.
-  url += `?client_key=${clientId}`;
-  url += "&scope=user.info.basic";
-  url += "&response_type=code";
-  url += `&redirect_uri=${redirectUri}`;
-  url += "&state=" + csrfState;
-  console.log(url)
-  res.redirect(url);
-});
-
-module.exports = router;
+// const tiktokAuthUrl = "https://open-api.tiktok.com/platform/oauth/connect/";
+// const clientId = process.env.TIKTOK_CLIENT_KEY;
+// const clientSecret = process.env.TIKTOK_CLIENT_SECRET;
+// const redirectUri = "https://social-auth-fb9r.onrender.com/auth/tiktok/callback";
 
 
 
 
+// // Redirect users to TikTok authorization URL
+// router.get("/", (req, res) => {
+//   // const authUrl = `${tiktokAuthUrl}?client_key=${clientId}&redirect_uri=${redirectUri}&scope=user.info.basic+user.info.avatar&response_type=code`;
 
-router.get("/callback", async (req, res) => {
-  const code = req.query.code;
+//   const csrfState = Math.random().toString(36).substring(2);
+//   res.cookie("csrfState", csrfState, { maxAge: 60000 });
 
-  const tokenUrl = "https://open-api.tiktok.com/oauth/access_token/";
-  const tokenParams = {
-    client_key: process.env.TIKTOK_CLIENT_KEY,
-    client_secret: process.env.TIKTOK_CLIENT_SECRET,
-    code: code,
-    grant_type: "authorization_code",
-    redirect_uri: redirectUri,
-  };
+//   // let url = "https://www.tiktok.com/v2/auth/authorize/";
+//   let url = "https://open-api.tiktok.com/platform/oauth/connect/";
 
-  try {
-    const tokenResponse = await axios.post(tokenUrl, null, {
-      params: tokenParams,
-    });
-    const accessToken = tokenResponse.data.data.access_token;
+//   // the following params need to be in `application/x-www-form-urlencoded` format.
+//   url += `?client_key=${clientId}`;
+//   url += "&scope=user.info.basic";
+//   url += "&response_type=code";
+//   url += `&redirect_uri=${redirectUri}`;
+//   url += "&state=" + csrfState;
+//   console.log(url)
+//   res.redirect(url);
+// });
 
-    // Save the accessToken and TikTok user ID to your MongoDB
-    // Use the user's TikTok ID as a unique identifier
-    const tiktokUserId = tokenResponse.data.data.open_id;
-    console.log(tiktokUserId)
-    await User.findOneAndUpdate(
-      { tiktokId: tiktokUserId },
-      { accessToken: accessToken },
-      { upsert: true }
-    );
+// module.exports = router;
 
-    res.send("Authentication successful!");
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Error during authentication");
+
+
+
+
+// router.get("/callback", async (req, res) => {
+  
+//   const code = req.query.code;
+
+//   const tokenUrl = "https://open-api.tiktok.com/oauth/access_token/";
+//   const tokenParams = {
+//     client_key: process.env.TIKTOK_CLIENT_KEY,
+//     client_secret: process.env.TIKTOK_CLIENT_SECRET,
+//     code: code,
+//     grant_type: "authorization_code",
+//     redirect_uri: redirectUri,
+//   };
+
+//   try {
+//     const tokenResponse = await axios.post(tokenUrl, null, {
+//       params: tokenParams,
+//     });
+//     const accessToken = tokenResponse.data.data.access_token;
+
+//     // Save the accessToken and TikTok user ID to your MongoDB
+//     // Use the user's TikTok ID as a unique identifier
+//     const tiktokUserId = tokenResponse.data.data.open_id;
+//     console.log(tiktokUserId)
+//     await User.findOneAndUpdate(
+//       { tiktokId: tiktokUserId },
+//       { accessToken: accessToken },
+//       { upsert: true }
+//     );
+
+//     res.send("Authentication successful!");
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send("Error during authentication");
+//   }
+// });
+
+const TiktokStrategy = require('passport-tiktok-auth').Strategy;
+
+
+passport.use(
+  new TiktokStrategy(
+    {
+      clientID: "7336702696353515525",
+      clientSecret: "rWVCeJYhukATmMEbMVwaw6kZREYzJQL0",
+      scope: ["user.info.basic"],
+      callbackURL: "https://social-auth-fb9r.onrender.com/callback",
+    },
+    function (accessToken, refreshToken, profile, done) {
+      User.findOrCreate({ tiktokId: profile.id }, function (err, user) {
+        return done(err, user);
+      });
+    }
+  )
+);
+
+router.get("/", passport.authenticate("tiktok"));
+
+router.get(
+  "/callback",
+  passport.authenticate("tiktok", { failureRedirect: "/login" }),
+  function (req, res) {
+    // Successful authentication, redirect home.
+    res.redirect("/");
   }
-});
+);
+
+module.exports = router

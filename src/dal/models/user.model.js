@@ -21,12 +21,7 @@ const userSchema = new mongoose.Schema(
     provider: {
       type: String,
     },
-    // facebookId: {
-    //   type: String,
-    // },
-    // githubId: {
-    //   type: String,
-    // },
+  
   },
   {
     timestamps: true,

@@ -14,14 +14,14 @@ passport.use(
       callbackURL: 'http://localhost:3000/auth/google/callback',
     },
     function (accessToken, refreshToken, profile, done) {
+      console.log(profile)
       userProfile = profile;
       return done(null, userProfile);
     }
   )
 );
 
-// request at /auth/google, when user click sign-up with google button transferring
-// the request to google server, to show emails screen
+
 router.get(
   '/',
   passport.authenticate('google', { scope: ['profile', 'email'] })
