@@ -8,6 +8,10 @@ const facebookAuth= require("../dal/facebook-auth.dal")
 const router = express.Router();
 require('dotenv').config();
 
+
+
+let userProfile;
+
 passport.use(
   new FacebookStrategy(
     {
@@ -30,7 +34,7 @@ router.get('/', passport.authenticate('facebook', { scope: 'email' }));
 
 router.get(
   "/callback",
-  passport.authenticate("facebook", { failureRedirect: "/auth/google/error" }),
+  passport.authenticate("facebook", { failureRedirect: "/auth/facebook/error" }),
   (req, res) => {
     res.redirect("/auth/facebook/success"); // Successful authentication, redirect success.
   }
