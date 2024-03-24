@@ -20,9 +20,8 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, done) {
       console.log(profile)
-      User.findOrCreate({ tiktokId: profile.id }, function (err, user) {
-        return done(err, user);
-      });
+      userProfile = profile
+      return done(null, userProfile)
     }
   )
 );
