@@ -17,11 +17,11 @@ const facebookAuthDal = {
       accountId: oauthUser.id,
       name: oauthUser.displayName,
       provider: oauthUser.provider,
-      email: oauthUser.emails[0].value, //optional - storing it as extra info
-      photoURL: oauthUser.photos[0].value, //optional
+    //   email: oauthUser.emails[0].value, //optional - storing it as extra info
+    //   photoURL: oauthUser.photos[0].value, //optional
     });
     await user.save();
-    console.log(user)
+    console.log("Saved User: ", user)
     const success = {
       message: "User Registered.",
     };

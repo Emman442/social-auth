@@ -20,7 +20,7 @@ passport.use(
       callbackURL: "https://social-auth-fb9r.onrender.com/auth/facebook/callback",
     },
     async function (accessToken, refreshToken, profile, cb) {
-      console.log(profile);
+      console.log("profile: ", profile);
       userProfile = profile;
       return cb(null, userProfile);
      
