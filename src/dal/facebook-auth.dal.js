@@ -1,7 +1,7 @@
 const User = require("./models/user.model");
 
 const facebookAuthDal = {
-  registerWithGoogle: async (oauthUser) => {
+  registerWithFacebook: async (oauthUser) => {
     const isUserExists = await User.findOne({
       accountId: oauthUser.id,
       provider: oauthUser.provider,
@@ -21,6 +21,7 @@ const facebookAuthDal = {
       photoURL: oauthUser.photos[0].value, //optional
     });
     await user.save();
+    console.log(user)
     const success = {
       message: "User Registered.",
     };

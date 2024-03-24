@@ -22,7 +22,7 @@ passport.use(
     async function (accessToken, refreshToken, profile, cb) {
       console.log(profile);
       userProfile = profile;
-      return done(null, userProfile);
+      return cb(null, userProfile);
      
     }
   )
@@ -41,7 +41,9 @@ router.get(
 );
 
 router.get("/success", async (req, res) => {
-  const { failure, success } = await googleAuth.registerWithGoogle(userProfile);
+  const { failure, success } = await facebookAuth.registerWithFacebook(userProfile);
+
+  console.log("from success:  ", userProfile)
   if (failure) console.log("Facebook user already exist in DB..");
   else console.log("Registering new Facebook user..");
   res.render("success", { user: userProfile });
