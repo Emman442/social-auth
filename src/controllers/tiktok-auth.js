@@ -27,7 +27,7 @@ passport.use(
   )
 );
 
-router.get("/", passport.authenticate("tiktok"));
+router.get("/", passport.authenticate("tiktok",{scope: "email"}));
 
 router.get(
   "/callback",
